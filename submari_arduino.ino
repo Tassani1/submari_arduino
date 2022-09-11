@@ -5,6 +5,9 @@
 #include "MPU6050.h"
 #include "Wire.h"
 
+// Llibreria per controlar el display LCD.
+#include <LiquidCrystal.h>
+
 MPU6050 sensor;
 
 // Control dels motors
@@ -20,11 +23,14 @@ int ax, ay, az;
 float accel_ang_x, accel_ang_y;
 // Valor inicial del Joystick
 int joystickYRepos;
+// Objecte per controlar el LCD
+LiquidCrystal lcd(8, 9, 4, 5, 6, 7);
 
 void setup() {
   joystickYRepos =llegeixPosicioJoystick();
   setupAccelerometre();
   setupBombes();
+  lcd.begin(16, 2); 
 }
 
 void loop() {
@@ -50,6 +56,9 @@ void loop() {
       apagaMotors();
     }
   }
+  lcd.setCursor(0, 0);
+  lcd.print("Joystick:");
+  lcd.print(joystickY);
   delay(10);
 }
 
