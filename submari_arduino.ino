@@ -36,14 +36,7 @@ void loop() {
   int joystickY = analogRead(pinJoystickY);
 
   //Mostra dades
-  Serial.print("X: ");
-  Serial.print(accel_ang_x);
-  Serial.print("\tY:");
-  Serial.print(accel_ang_y);
-  Serial.print("\tjoystickYRepos:");
-  Serial.print(joystickYRepos);
-  Serial.print("\tJoystick:");
-  Serial.println(joystickY);
+  mostrarDades(accel_ang_x, accel_ang_y, joystickY, joystickYRepos);
 
   if (joystickY < joystickYRepos - 200) {
     encendreMotorA();
@@ -94,4 +87,15 @@ void encendreMotorB() {
 void apagarMotors() {
   digitalWrite(motorA, HIGH);
   digitalWrite(motorB, HIGH);
+}
+
+void mostrarDades(int accel_ang_x, int accel_ang_y, int joystickY, int joystickYRepos) {
+  Serial.print("X: ");
+  Serial.print(accel_ang_x);
+  Serial.print("\tY:");
+  Serial.print(accel_ang_y);
+  Serial.print("\tjoystickYRepos:");
+  Serial.print(joystickYRepos);
+  Serial.print("\tJoystick:");
+  Serial.println(joystickY);
 }
