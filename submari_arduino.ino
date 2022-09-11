@@ -7,11 +7,6 @@
 
 MPU6050 sensor;
 
-// Valors RAW (sense processar) de l'aceleròmetre en els eixos x,y,z
-int ax, ay, az;
-// Valor inicial del Joystick
-int joystickYRepos;
-
 // Control dels motors
 const int motorA = 12; // Groc-Verd
 const int motorB = 13; // Blau-Vermell
@@ -19,41 +14,40 @@ const int motorB = 13; // Blau-Vermell
 // Pin de Y del joystick
 const int pinJoystickY = A1;
 
+// Valors RAW (sense processar) de l'aceleròmetre en els eixos x,y,z
+int ax, ay, az;
+// Valors de l'acceleració
+float accel_ang_x, accel_ang_y;
+// Valor inicial del Joystick
+int joystickYRepos;
+
 void setup() {
-  joystickYRepos = analogRead(pinJoystickY);
+  joystickYRepos =llegeixPosicioJoystick();
   setupAccelerometre();
   setupBombes();
 }
 
 void loop() {
-  // Llegeix acceleracions
-  sensor.getAcceleration(&ax, &ay, &az);
-  //Calcula angles d'inclinació:
-  float accel_ang_x=atan(ax/sqrt(pow(ay,2) + pow(az,2)))*(180.0/3.14);
-  float accel_ang_y=atan(ay/sqrt(pow(ax,2) + pow(az,2)))*(180.0/3.14);
-
-  // Llegeix la posició del Joystick
-  int joystickY = analogRead(pinJoystickY);
-
-  //Mostra dades
-  mostrarDades(accel_ang_x, accel_ang_y, joystickY, joystickYRepos);
+  llegeixAcceleracions();
+  int joystickY = llegeixPosicioJoystick();
+  mostraDades(accel_ang_x, accel_ang_y, joystickY, joystickYRepos);
 
   if (joystickY < joystickYRepos - 200) {
-    encendreMotorA();
+    encenMotorA();
   } else if (joystickY > joystickYRepos + 200) {
-    encendreMotorB();
+    encenMotorB();
   }
   else {
     if (accel_ang_y>25) {
-      apagarMotors();
-      encendreMotorA();
+      apagaMotors();
+      encenMotorA();
     }
     else if (accel_ang_y<-25){
-      apagarMotors();
-      encendreMotorB();
+      apagaMotors();
+      encenMotorB();
     }
     else {
-      apagarMotors();
+      apagaMotors();
     }
   }
   delay(10);
@@ -74,22 +68,22 @@ void setupBombes() {
   pinMode(motorB, OUTPUT);
 }
 
-void encendreMotorA() {
+void encenMotorA() {
   digitalWrite(motorA, LOW);
   digitalWrite(motorB, HIGH);
 }
 
-void encendreMotorB() {
+void encenMotorB() {
   digitalWrite(motorA, HIGH);
   digitalWrite(motorB, LOW);
 }
 
-void apagarMotors() {
+void apagaMotors() {
   digitalWrite(motorA, HIGH);
   digitalWrite(motorB, HIGH);
 }
 
-void mostrarDades(int accel_ang_x, int accel_ang_y, int joystickY, int joystickYRepos) {
+void mostraDades(int accel_ang_x, int accel_ang_y, int joystickY, int joystickYRepos) {
   Serial.print("X: ");
   Serial.print(accel_ang_x);
   Serial.print("\tY:");
@@ -98,4 +92,16 @@ void mostrarDades(int accel_ang_x, int accel_ang_y, int joystickY, int joystickY
   Serial.print(joystickYRepos);
   Serial.print("\tJoystick:");
   Serial.println(joystickY);
+}
+
+void llegeixAcceleracions() {
+  // Llegeix acceleracions
+  sensor.getAcceleration(&ax, &ay, &az);
+  //Calcula angles d'inclinació:
+  accel_ang_x=atan(ax/sqrt(pow(ay,2) + pow(az,2)))*(180.0/3.14);
+  accel_ang_y=atan(ay/sqrt(pow(ax,2) + pow(az,2)))*(180.0/3.14);
+}
+
+int llegeixPosicioJoystick() {
+  return analogRead(pinJoystickY);
 }
