@@ -5,6 +5,9 @@
 #include "MPU6050.h"
 #include "Wire.h"
 
+// Llibreria per sprintf
+#include "stdio.h"
+
 // Llibreria per controlar el display LCD.
 #include <LiquidCrystal.h>
 
@@ -30,13 +33,12 @@ void setup() {
   joystickYRepos =llegeixPosicioJoystick();
   setupAccelerometre();
   setupBombes();
-  lcd.begin(16, 2); 
+  lcd.begin(16, 2);
 }
 
 void loop() {
   llegeixAcceleracions();
   int joystickY = llegeixPosicioJoystick();
-  mostraDades(accel_ang_x, accel_ang_y, joystickY, joystickYRepos);
 
   if (joystickY < joystickYRepos - 200) {
     encenMotorA();
@@ -56,9 +58,7 @@ void loop() {
       apagaMotors();
     }
   }
-  lcd.setCursor(0, 0);
-  lcd.print("Joystick:");
-  lcd.print(joystickY);
+  mostraDades(accel_ang_x, accel_ang_y, joystickY, joystickYRepos);
   delay(10);
 }
 
@@ -93,6 +93,14 @@ void apagaMotors() {
 }
 
 void mostraDades(int accel_ang_x, int accel_ang_y, int joystickY, int joystickYRepos) {
+  char xy[16];
+  sprintf(xy, "X: %3d Y: %3d", accel_ang_x, accel_ang_y);
+  lcd.setCursor(0,0);
+  lcd.print(xy);
+  lcd.setCursor(0, 1);
+  lcd.print("Joystick:");
+  lcd.print(joystickY);
+
   Serial.print("X: ");
   Serial.print(accel_ang_x);
   Serial.print("\tY:");
